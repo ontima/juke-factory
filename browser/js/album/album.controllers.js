@@ -1,6 +1,6 @@
 'use strict';
 
-juke.controller('AlbumCtrl', function($scope, $http, StatsFactory, AlbumGetter, $rootScope, $log) {
+juke.controller('AlbumCtrl', function($scope, StatsFactory, AlbumGetter, $rootScope, $log) {
 
   AlbumGetter.fetchAll()
   .then(function (albums) {

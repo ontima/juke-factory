@@ -25,11 +25,13 @@ juke.factory('StatsFactory', function($q){
 juke.factory('AlbumGetter', function($http, $q) {
   var getters = {};
 
-  getters.fetchAll = function() {
+  getters.fetchAll = function(callback, cbfail) {
    
     return $http.get('/api/albums/')
     .then(function(response){
-      return response.data;
+      callback(response.data);
+    }, function(err) {
+      cbfail(err)
     })
 
   };

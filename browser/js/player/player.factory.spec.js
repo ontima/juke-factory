@@ -1,7 +1,7 @@
 var expect = chai.expect;
 
 describe('`PlayerFactory` factory', function () {
-  beforeEach(module('juke')); // loads our app
+  beforeEach(angular.module('juke')); // loads our app
 
   var song1, song2;
   before(function () {

@@ -26,12 +26,12 @@ juke.factory('AlbumGetter', function($http, $q) {
   var getters = {};
 
   getters.fetchAll = function(callback, cbfail) {
-   
+
     return $http.get('/api/albums/')
     .then(function(response){
-      callback(response.data);
+      return response.data;
     }, function(err) {
-      cbfail(err)
+      console.log(err)
     })
 
   };
@@ -47,4 +47,3 @@ juke.factory('AlbumGetter', function($http, $q) {
 
   return getters;
 });
-

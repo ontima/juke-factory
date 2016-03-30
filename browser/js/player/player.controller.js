@@ -22,12 +22,11 @@ juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
   // main toggle
   $scope.toggle = function (song) {
     if ($scope.playing) $rootScope.$broadcast('pause');
-    else $rootScope.$broadcast('play', song);
+    else PlayerFactory.start(song);
   };
 
   // incoming events (from Album or toggle)
   $scope.$on('pause', pause);
-  $scope.$on('play', play);
 
   // functionality
   function pause () {
@@ -35,19 +34,9 @@ juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
     // audio.pause();
     // $scope.playing = false;
   }
-  function play (event, song){
-    // pause();
-    $scope.playing = true;
-    // // resume current song
-    if (song === $scope.currentSong) return PlayerFactory.start(audio, song);
-    // // enable loading new song
-    $scope.currentSong = song;
-    audio.src = song.audioUrl;
-    // audio.load();
-    // audio.play();
-    PlayerFactory.start(audio);
-
-  }
+  $scope.play = function(song){
+   PlayerFactory.start(song);
+ };
 
   // outgoing events (to Album… or potentially other characters)
   $scope.next = function () { pause(); $rootScope.$broadcast('next'); };

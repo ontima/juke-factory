@@ -1,66 +1,66 @@
 'use strict';
 
-juke.factory('PlayerFactory', function($q){
+juke.factory('PlayerFactory', function($q, $rootScope){
   var tools = {};
   var playing = false;
   var currentSong;
 
+
   var audio = document.createElement('audio');
   audio.addEventListener('ended', function () {
     tools.next();
-    // $scope.$apply(); // triggers $rootScope.$digest, which hits other scopes
+    $rootScope.$apply(); // triggers $rootScope.$digest, which hits other scopes
     //////fix this shit below
-    // $scope.$evalAsync(); // likely best, schedules digest if none happening
+   $rootScope.$evalAsync(); // likely best, schedules digest if none happening
   });
-  // audio.addEventListener('timeupdate', function () {
-  //   $scope.progress = 100 * audio.currentTime / audio.duration;
-    // $scope.$digest(); // re-computes current template only (this scope)
-    // $scope.$evalAsync(); // likely best, schedules digest if none happening
-  });
+   audio.addEventListener('timeupdate', function () {
+     $rootScope.progress = 100 * audio.currentTime / audio.duration;
+     $rootScope.$digest(); // re-computes current template only (this scope)
+     $rootScope.$evalAsync(); // likely best, schedules digest if none happening
+   });
 
 
   tools.start = function(song){
     console.log("song", song);
-    if (song === currentSong) return
+    console.log("rootScope: ", $rootScope);
+    //if (song === currentSong) return
+    playing = true;
     audio.src = song.audioUrl;
     audio.load(song);
     audio.play(song);
     currentSong = song;
-
-
-    // stop existing audio (e.g. other song) in any case
-    // tools.pause();
-    // $scope.playing = true;
-    // resume current song
-    // if (song === $scope.currentSong) return audio.play();
-
-    // enable loading new song
-    // $scope.currentSong = song;
-    // audio.src = song.audioUrl;
-    // audio.load();
-    // audio.play();
+    
   };
 
-  tools.pause = function(audio){
+  tools.pause = function(){
     audio.pause();
+    console.log("pausing");
     playing = false;
   };
   tools.resume = function() {
   };
   tools.isPlaying = function() {
-
+    return playing;
   };
   tools.getCurrentSong = function() {
-
+    return currentSong;
   };
-  tools.next = function() {
 
-  };
-  tools.previous = function() {
 
-  };
-  tools.getProgress = function() {
+  // a "true" modulo that wraps negative to the top of the range
+  function mod (num, m) { return ((num % m) + m) % m; };
 
+  // jump `interval` spots in album (negative to go back, default +1)
+  tools.skip = function(interval) {
+    if (!currentSong) return;
+    var index = currentSong.albumIndex;
+    console.log("current song index: ", index);
+    index = mod( (index + (interval || 1)), $rootScope.album.songs.length );
+    console.log("next index: ", index);
+    currentSong = $rootScope.album.songs[index];
+    console.log("playing: ", playing);
+    tools.start(currentSong);
+    //$rootScope.$broadcast('play', $scope.currentSong);
   };
 
   return tools;
